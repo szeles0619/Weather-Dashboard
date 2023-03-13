@@ -10,3 +10,26 @@
 .col-sm-2 {
     background-color: rgb(43, 47, 82);
 }
+
+.input-group-append {
+    display: block;
+    padding-top: 20px;
+}
+
+#search-city.form-control {
+    width: 100%;
+}
+
+.input-group{
+    display: block;
+    padding-top: 20px;
+}
+
+#clear-history.btn.btn-primary {
+    margin-bottom: 20px;
+}
+
+#search-button {
+    border-radius: 8px;
+}
+
