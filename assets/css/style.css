@@ -1,0 +1,33 @@
+:root {
+    --blue-color: rgb(81, 81, 217);
+}
+
+.bg-dark {
+    background-image: linear-gradient(to right, var(--blue-color), rgb(17, 17, 59));
+}
+
+.input-group {
+    display: block;
+    padding-bottom: 20px;
+}
+
+.input-group-append {
+    display: block;
+    padding-top: 20px;
+}
+
+#search-button {
+    background-color: rgb(2, 154, 255);
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+hr {
+    background-color: rgb(89, 77, 77);
+}
