@@ -33,3 +33,13 @@
     border-radius: 8px;
 }
 
+li.list-group-item{
+    background-color: rgb(127, 128, 127);
+}
+
+.row {
+    justify-content: space-between;
+}
+
+
+

@@ -41,24 +41,24 @@ function currentWeather(city) {
     }).then(function (response) {
 
         console.log(response);
-        
+
         const weathericon = response.weather[0].icon;
         const iconurl = "https://openweathermap.org/img/wn/" + weathericon + "@2x.png";
-       
+
         const date = new Date(response.dt * 1000).toLocaleDateString();
-        
+
         $(currentCity).html(response.name + "(" + date + ")" + "<img src=" + iconurl + ">");
 
         const tempF = (response.main.temp - 273.15) * 1.80 + 32;
         $(currentTemperature).html((tempF).toFixed(2) + "&#8457");
-        
+
         $(currentHumidty).html(response.main.humidity + "%");
 
         const ws = response.wind.speed;
         const windsmph = (ws * 2.237).toFixed(1);
 
-        $(currentWSpeed).html(windsmph + "MPH");
-    
+        $(currentWSpeed).html(windsmph + "KPH");
+
         forecast(response.id);
         if (response.cod == 200) {
             newCity = JSON.parse(localStorage.getItem("cityname"));
@@ -82,32 +82,64 @@ function currentWeather(city) {
     });
 }
 
-
-function forecast(cityid) {
-    const dayover = false;
+function forecast(cityid, event) {
     const queryforcastURL = "https://api.openweathermap.org/data/2.5/forecast?id=" + cityid + "&appid=" + APIKey;
     $.ajax({
         url: queryforcastURL,
         method: "GET"
     }).then(function (response) {
+        console.log(response)
 
-        for (i = 0; i < 5; i++) {
-            const date = new Date((response.list[((i + 1) * 8) - 1].dt) * 1000).toLocaleDateString();
-            const iconcode = response.list[((i + 1) * 8) - 1].weather[0].icon;
+        // get the current date and time
+        const today = new Date();
+        const now = today.getTime();
+
+        // iterate through the forecast data and select the next 5 days starting from today
+        let dayIndex = 1;
+        for (let i = 0; i < response.list.length; i++) {
+            const forecastDate = new Date(response.list[i].dt * 1000);
+
+            // skip forecast data before today
+            if (forecastDate.getTime() < now) {
+                continue;
+            }
+
+            // skip forecast data for the current day
+            if (forecastDate.getDate() === today.getDate()) {
+                continue;
+            }
+
+            // skip forecast data for days beyond the next 5 days
+            if (dayIndex > 5) {
+                break;
+            }
+
+            // set the forecast data for the current day
+            const date = forecastDate.toLocaleDateString();
+            const iconcode = response.list[i].weather[0].icon;
             const iconurl = "https://openweathermap.org/img/wn/" + iconcode + ".png";
-            const tempK = response.list[((i + 1) * 8) - 1].main.temp;
+            const tempK = response.list[i].main.temp;
             const tempF = (((tempK - 273.5) * 1.80) + 32).toFixed(2);
-            const humidity = response.list[((i + 1) * 8) - 1].main.humidity;
+            const humidity = response.list[i].main.humidity;
+            const windSpeed = response.list[i].wind.speed;
 
-            $("#Day" + i).html(date);
-            $("#Img" + i).html("<img src=" + iconurl + ">");
-            $("#dayTemp" + i).html(tempF + "&#8457");
-            $("#dayHumidity" + i).html(humidity + "%");
+            $("#Day" + dayIndex).html(date);
+            $("#Img" + dayIndex).html("<img src=" + iconurl + ">");
+            $("#dayTemp" + dayIndex).html(tempF + "&#8457");
+            $("#dayHumidity" + dayIndex).html(humidity + "%");
+            $("#dayWind" + dayIndex).html(windSpeed + "KPH");
+
+            dayIndex++;
         }
+
+        // hide the last day in the HTML using CSS
+        $("#Day6").hide();
+        $("#Img6").hide();
+        $("#dayTemp6").hide();
+        $("#dayHumidity6").hide();
 
     });
 }
-
 
 function addToList(c) {
     const listEl = $("<li>" + c.toUpperCase() + "</li>");
@@ -130,7 +162,7 @@ function loadlastCity() {
     $("ul").empty();
     const newCity = JSON.parse(localStorage.getItem("cityname"));
     if (newCity !== null) {
-        newCity = JSON.parse(localStorage.getItem("cityname"));
+        // newCity = JSON.parse(localStorage.getItem("cityname"));
         for (i = 0; i < newCity.length; i++) {
             addToList(newCity[i]);
         }
