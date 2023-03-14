@@ -32,7 +32,7 @@ function find(c) {
     return 1;
 }
 
-// Here we create the AJAX call
+//AJAX call for current weather
 function currentWeather(city) {
     const queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&APPID=" + APIKey;
     $.ajax({
@@ -48,15 +48,15 @@ function currentWeather(city) {
         const date = new Date(response.dt * 1000).toLocaleDateString();
 
         $(currentCity).html(response.name + "(" + date + ")" + "<img src=" + iconurl + ">");
-
-        const tempF = (response.main.temp - 273.15) * 1.80 + 32;
-        $(currentTemperature).html((tempF).toFixed(2) + "&#8457");
+        //Display temperature in celsius
+        const tempF = (response.main.temp - 273.15);
+        $(currentTemperature).html((tempF).toFixed(2) + "℃");
 
         $(currentHumidty).html(response.main.humidity + "%");
 
         const ws = response.wind.speed;
         const windsmph = (ws * 2.237).toFixed(1);
-
+        //Display wind speed in kph
         $(currentWSpeed).html(windsmph + "KPH");
 
         forecast(response.id);
@@ -90,49 +90,49 @@ function forecast(cityid, event) {
     }).then(function (response) {
         console.log(response)
 
-        // get the current date and time
+        //Get the current date and time
         const today = new Date();
         const now = today.getTime();
 
-        // iterate through the forecast data and select the next 5 days starting from today
+        //Iterate through the forecast data and select the next 5 days starting from today
         let dayIndex = 1;
         for (let i = 0; i < response.list.length; i++) {
             const forecastDate = new Date(response.list[i].dt * 1000);
 
-            // skip forecast data before today
+            //Skip forecast data before today
             if (forecastDate.getTime() < now) {
                 continue;
             }
 
-            // skip forecast data for the current day
+            //Skip forecast data for the current day
             if (forecastDate.getDate() === today.getDate()) {
                 continue;
             }
 
-            // skip forecast data for days beyond the next 5 days
+            //Skip forecast data for days beyond the next 5 days
             if (dayIndex > 5) {
                 break;
             }
 
-            // set the forecast data for the current day
+            //Set the forecast data for the current day
             const date = forecastDate.toLocaleDateString();
             const iconcode = response.list[i].weather[0].icon;
             const iconurl = "https://openweathermap.org/img/wn/" + iconcode + ".png";
             const tempK = response.list[i].main.temp;
-            const tempF = (((tempK - 273.5) * 1.80) + 32).toFixed(2);
+            const tempF = ((tempK - 273.5)).toFixed(2);
             const humidity = response.list[i].main.humidity;
             const windSpeed = response.list[i].wind.speed;
 
             $("#Day" + dayIndex).html(date);
             $("#Img" + dayIndex).html("<img src=" + iconurl + ">");
-            $("#dayTemp" + dayIndex).html(tempF + "&#8457");
+            $("#dayTemp" + dayIndex).html(tempF + "℃");
             $("#dayHumidity" + dayIndex).html(humidity + "%");
             $("#dayWind" + dayIndex).html(windSpeed + "KPH");
 
             dayIndex++;
         }
 
-        // hide the last day in the HTML using CSS
+        //Hide the last day in the HTML using CSS
         $("#Day6").hide();
         $("#Img6").hide();
         $("#dayTemp6").hide();
@@ -140,7 +140,7 @@ function forecast(cityid, event) {
 
     });
 }
-
+//Display search history with uppercase city searched for added to the list
 function addToList(c) {
     const listEl = $("<li>" + c.toUpperCase() + "</li>");
     $(listEl).attr("class", "list-group-item");
@@ -162,7 +162,6 @@ function loadlastCity() {
     $("ul").empty();
     const newCity = JSON.parse(localStorage.getItem("cityname"));
     if (newCity !== null) {
-        // newCity = JSON.parse(localStorage.getItem("cityname"));
         for (i = 0; i < newCity.length; i++) {
             addToList(newCity[i]);
         }
@@ -171,7 +170,7 @@ function loadlastCity() {
     }
 
 }
-
+//This function clears all search history
 function clearHistory(event) {
     event.preventDefault();
     newCity = [];
